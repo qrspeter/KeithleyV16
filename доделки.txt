@@ -9,6 +9,8 @@
 использовать yticks()  / ticker
 https://stackoverflow.com/questions/25750170/show-decimal-places-and-scientific-notation-on-the-axis-of-a-matplotlib-plot
 https://queirozf.com/entries/matplotlib-examples-number-formatting-for-axes-labels
-основная проблема - числа при -4...-5 степени, когда матплотлиб еще не переходит на экпоненциальную запись.
+основная проблема - числа при -4...-5 степени, когда матплотлиб еще не переходит на экспоненциальную запись.
 
 3. Выводить графики асинхронно в потоке, а то на них секунда уходит и сбивается лог
+
+4. зависает команда fig.canvas.flush_events() в неосновном аккаунте в убунту. Если закомментировать - обновление происходит то ли каждые 10 сек, то ли каждые 10 измерений.
