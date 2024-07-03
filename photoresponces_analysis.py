@@ -1,4 +1,5 @@
 # analysis.py
+# based on https://github.com/qrspeter/summerschool_2024 
 # Принимает в качестве аргумента командной строки имя файла, сформированного скриптом laser.py (например, "python analysis.py measurement_data.csv")
 # Выводит график зависимости фотоотклика проводимости (до и после каждой накачки) от дозы облучения.
 
