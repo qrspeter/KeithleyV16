@@ -4,6 +4,7 @@ import time
 import numpy as np
 import matplotlib.pyplot as plt
 import csv
+import os
 
 current_range = 1e-3
 # current_ranges = [1E-9, 1E-8, 1E-7, 1E-6, 1E-5, 1E-4, 1E-3, 1E-2, 1E-1, 1, 1.5]
@@ -22,7 +23,7 @@ filename = path + time_for_name + '_' + sample_name +'_it_' + str(bias)
 
 
 
-print("Sample set name: ", sample_name)
+print("Sample name: ", sample_name)
 
 
 with open(filename + '.csv', 'a') as csvfile:
@@ -50,8 +51,8 @@ ax.relim()
 ax.autoscale()
 fig.canvas.draw()
 fig.canvas.flush_events()
-ossila.set_v(bias)
-ossila.get_v()
+keithley.set_v(bias)
+keithley.get_v()
 
 try:
     start = time.time()
@@ -88,6 +89,6 @@ except KeyboardInterrupt:
 
 plt.ioff()
 
-KeithleyV16.it2fig(time_log, current_log, 'Time, s', filename, showfig=True, savefig=True)
+KeithleyV16.it2fig(filename, time_log, current_log, ['Time, s'], showfig=True, savefig=True)
 plt.show()
 

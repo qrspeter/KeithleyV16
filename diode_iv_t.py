@@ -4,6 +4,7 @@ import time
 import numpy as np
 import matplotlib.pyplot as plt
 import csv
+import os
 
 keithley = KeithleyV16.KeithleyV16(1e-3, 'SPEED_NORMAL')
 sweep_start = 0.0
@@ -88,6 +89,6 @@ except KeyboardInterrupt:
 
 plt.ioff()
 
-KeithleyV16.it2fig(time_log, current_log, 'Time, s', filename, showfig=True, savefig=True)
+KeithleyV16.it2fig(filename, time_log, current_log, ['Time, s'], showfig=True, savefig=True)
 plt.show()
 

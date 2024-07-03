@@ -8,6 +8,9 @@ by TU Graz / Graz University of Technology
 * diode_iv.py - IV measurement I(V). Several samples into one file.
 * diode_it.py - I(t) at given U until break.
 * diode_iv_t.py - I(t) measurement based on periodic IV measurements.
+* photoresponces_measurement.py - measurement series of responces on pumpes
+* photoresponces_analysis.py - calculating of photoresponces and conductivity decay times
+
 
 /re-engineering/ - versions based on KeithleyV15 for re-engineering:
 * diode_i_t_pulsed - I(t)  at given V with pulsed laser with delay and accumulation.  Several samples into one file.

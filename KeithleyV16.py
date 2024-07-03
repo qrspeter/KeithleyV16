@@ -30,7 +30,7 @@ class KeithleyV16(object):
         self.current_range = __i_range
         # current_ranges = [1E-9, 1E-8, 1E-7, 1E-6, 1E-5, 1E-4, 1E-3, 1E-2, 1E-1, 1, 1.5]
         self.current_limit = self.current_range
-        self.sm = KeithleyV15.SMU26xx('TCPIP0::192.166.1.101::INSTR') 
+        self.sm = KeithleyV15.SMU26xx('USB0::0x05E6::0x2636::4097970::INSTR') #('TCPIP0::192.166.1.101::INSTR') 
         self.smu_drain = self.sm.get_channel(self.sm.CHANNEL_A)
 
         self.smu_drain.reset()
@@ -60,13 +60,13 @@ class KeithleyV16(object):
             case _:
                  self.smu_drain.set_measurement_speed_normal()
                                   
-    def set_v(voltage):
+    def set_v(self,voltage):
         self.smu_drain.set_voltage(voltage)
     
-    def get_v():
+    def get_v(self):
         return self.smu_drain.measure_voltage()
     
-    def get_i_v():
+    def get_i_v(self):
         return self.smu_drain.measure_current_and_voltage()
 
     
@@ -122,20 +122,20 @@ def it_from_iv():
 def pulsed(warm_up, duration, cool_down, __step):
         return 0
 
-def iv2fig(absciss, ordinates, ordinates_names, filename, showfig=False, savefig=True):
-    data2fig(absciss, ordinates, ordinates_names, filename, 'Voltage (v)', 'Current (A)', showfig, savefig)
+def iv2fig(filename, current, voltage, column_names=' ', showfig=False, savefig=True):
+    data2fig(filename, current, voltage, column_names, 'Voltage (V)', 'Current (A)', showfig, savefig)
     
-def it2fig(absciss, ordinates, ordinates_names, filename, showfig=False, savefig=True):
-    data2fig(absciss, ordinates, ordinates_names, filename, 'Time (s)', 'Current (A)', showfig, savefig)    
+def it2fig(filename, times, current, column_names=' ', showfig=False, savefig=True):
+    data2fig(filename, times, np.array(current), column_names, 'Time (s)', 'Current (A)', showfig, savefig)    
 
-def data2fig(absciss, ordinates, ordinates_names, filename, x_name, y_name, showfig=False, savefig=True):
+def data2fig(filename, x, y, column_names, x_name, y_name, showfig=False, savefig=True):
     
     fig = plt.figure(figsize=(8,6))
-    if len(ordinates.shape) == 1:
-        plt.plot(absciss, ordinates, label=ordinates_names, linewidth=2)
+    if len(y.shape) == 1:
+        plt.plot(x, y, label=str(*column_names), linewidth=2)
     else:
-        for i in range(ordinates.shape[0]):
-            plt.plot(absciss, ordinates[i,:], label=ordinates_names[i], linewidth=2)
+        for i in range(y.shape[0]):
+            plt.plot(x, y[i,:], label=column_names[i], linewidth=2)
 
     plt.xlabel(x_name, fontsize=14)
     plt.ylabel(y_name, fontsize=14)
@@ -149,11 +149,10 @@ def data2fig(absciss, ordinates, ordinates_names, filename, x_name, y_name, show
         plt.show()
 
 
-def data2file(data, filename, column_names=[]):
+def data2file(filename, data, column_names=[]):
 #    lists2file(column_names_str, filename_raw, lst_raw)
     delim = ','
     column_names_str = delim.join(column_names)
-    
     np.savetxt(filename + '.csv', data, fmt='%.10g', delimiter=delim, header=column_names_str) 
 
 
@@ -173,7 +172,7 @@ if __name__ == "__main__":
     filename = path + time_for_name + '_' + sample_name +'_IV_' + str(sweep_end)
 
     column_names = ('V','I')
-    iv2fig(voltages, currents, column_names, filename, True, True)
-    data2file(np.stack((voltages, currents), axis=0).T, filename, column_names)
+    iv2fig(filename, voltages, currents, column_names[1:], True, True)
+    data2file(filename, np.stack((voltages, currents), axis=0).T, column_names)
     # np.savetxt(filename + '.csv', np.stack((voltages, currents), axis=0).T, fmt='%.10g', delimiter=',', header='Voltage (V), ' + column_names)
     

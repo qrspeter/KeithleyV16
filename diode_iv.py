@@ -2,13 +2,14 @@ import KeithleyV16
 import datetime
 import numpy as np
 import matplotlib.pyplot as plt
+import os
 
-keithley = KeithleyV16.KeithleyV16(1e-3, 'SPEED_NORMAL')
+keithley = KeithleyV16.KeithleyV16(1e-2, 'SPEED_NORMAL')
 sweep_start = 0.0
 sweep_end = 5.0
 sweep_step = 0.2
 
-sample_name = 'rGO_NPLs_140524.0'
+sample_name = 'rGO100pc_no2'
 time_for_name = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 path = './data/'
 if not os.path.exists(path):
@@ -39,7 +40,7 @@ while True:
     if data == []:
         data.append(voltages)
     data.append(currents)
-    KeithleyV16.iv2fig(voltages, currents, ' ', filename, showfig=True, savefig=False)
+    KeithleyV16.iv2fig(filename, voltages, currents, ' ', showfig=True, savefig=False)
     plt.show()
 
 
@@ -48,10 +49,10 @@ np_data = np.stack(data, axis=0)
 delim = ','
 column_names_str = delim.join(column_names)
 
-KeithleyV16.data2file(np_data, column_names, filename + '.csv')
+KeithleyV16.data2file(filename, np_data, column_names)
 #np.savetxt(filename + '.csv', np_data.T, fmt='%.10g', delimiter=',', header=column_names_str)
 
-KeithleyV16.iv2fig(np_data[0,:], np_data[1:,:], column_names[1:], filename, showfig=True, savefig=True)
+KeithleyV16.iv2fig(filename, np_data[0,:], np_data[1:,:], column_names[1:], showfig=True, savefig=True)
 
 '''
 # Почему-то рисование в функции не происходит, хотя картинка сохраняется.
