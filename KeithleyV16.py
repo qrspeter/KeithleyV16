@@ -41,6 +41,7 @@ class KeithleyV16(object):
         self.smu_drain.set_voltage(0)
         self.smu_drain.set_current(0)
 
+
         if self.current_range == 0:
             self.smu_drain.enable_current_autorange()      # it is not working
         else:
@@ -61,13 +62,16 @@ class KeithleyV16(object):
                  self.smu_drain.set_measurement_speed_normal()
                                   
     def set_v(self,voltage):
+        self.smu_drain.enable_output()
         self.smu_drain.set_voltage(voltage)
     
     def get_v(self):
+        #self.smu_drain.enable_output()
         return self.smu_drain.measure_voltage()
     
     def get_i_v(self):
-        return self.smu_drain.measure_current_and_voltage()
+        res = self.smu_drain.measure_current_and_voltage()
+        return res
 
     
     def iv(self, __begin = 0.0, __end = 5.0, __step = 0.2) -> [list, list]:
@@ -80,7 +84,6 @@ class KeithleyV16(object):
         else:
             __step = np.abs(__step)        
         
-
         self.smu_drain.enable_output()
         self.smu_drain.set_voltage(__begin)
         self.smu_drain.measure_current_and_voltage()
@@ -107,9 +110,14 @@ class KeithleyV16(object):
         
         return [voltages, currents]
 
+    def disable(self):
+        # disable the output
+        self.smu_drain.disable_output()
+        self.sm.disconnect()
+
+    
     def __del__(self):
         #self.smu_drain.disable_output()
-        self.sm.disconnect()
         pass
 
         

@@ -6,10 +6,10 @@ import matplotlib.pyplot as plt
 import csv
 import os
 
-keithley = KeithleyV16.KeithleyV16(1e-3, 'SPEED_NORMAL')
+keithley = KeithleyV16.KeithleyV16(1e-2, 'SPEED_NORMAL')
 sweep_start = 0.0
 sweep_end = 2.0
-sweep_step = 0.2
+sweep_step = 0.25
 step = 2.0 # in sec. Not less than 0.7 for hi_accuracy and 0.5 for speed_normal
 
 sample_name = 'rGO10_NPl_p1'
@@ -65,7 +65,8 @@ try:
         steps_over = 2
         [voltages, currents] = keithley.iv(sweep_start, sweep_end + steps_over*sweep_step, sweep_step)
         aver = sum(currents[-2*steps_over-1:])/(2*steps_over + 1)
-        current_log.append(currents[-1])
+        current_log.append(aver)
+        # current_log.append(currents[-1])
         time_log.append(nt - start)
         
         print('%.2f' % (nt - start), ' sec; ', currents[-1], ' A')

@@ -6,14 +6,14 @@ import matplotlib.pyplot as plt
 import csv
 import os
 
-current_range = 1e-3
+current_range = 1e-2
 # current_ranges = [1E-9, 1E-8, 1E-7, 1E-6, 1E-5, 1E-4, 1E-3, 1E-2, 1E-1, 1, 1.5]
 keithley = KeithleyV16.KeithleyV16(current_range, 'SPEED_NORMAL')
 bias = 2 # V
 
 step = 1.0 # in sec. Not less than 0.7 for hi_accuracy and 0.5 for speed_normal
 
-sample_name = 'rGO_10pc'
+sample_name = 'resistor' #'NPl_CdSe_p1'
 time_for_name = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 path = './data/'
 if not os.path.exists(path):
@@ -64,7 +64,7 @@ try:
         while (nt - start) < (step * (len(time_log))):
             #print(f'{len(time_arr)=}, until next meas {-(nt - start) + (step * len(time_arr))}')
             nt = time.time() 
-        [voltage, current] = keithley.get_i_v()
+        [current, voltage] = keithley.get_i_v()
         current_log.append(current)
         time_log.append(nt - start)
         
@@ -88,7 +88,7 @@ except KeyboardInterrupt:
     
 
 plt.ioff()
-
+keithley.disable()
 KeithleyV16.it2fig(filename, time_log, current_log, ['Time, s'], showfig=True, savefig=True)
 plt.show()
 

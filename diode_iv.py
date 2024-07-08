@@ -9,7 +9,7 @@ sweep_start = 0.0
 sweep_end = 5.0
 sweep_step = 0.2
 
-sample_name = 'rGO100pc_no2'
+sample_name = 'rGO100pc_no1_NPl'
 time_for_name = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 path = './data/'
 if not os.path.exists(path):

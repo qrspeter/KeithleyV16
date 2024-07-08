@@ -1,10 +1,10 @@
 # measurement.py
-# based on https://github.com/qrspeter/summerschool_2024
 # Записывает ток через образец при периодическом воздействии накачки и зондирующих импульсов (в циклах).
 # Формирует файл с таблицей, соответствующей циклам, и файл с непрерывной записью данных в одну колонку.
 
 
 from KeithleyV15 import SMU26xx
+import KeithleyV16
 import time
 import datetime
 import csv
@@ -14,14 +14,15 @@ import time
 import matplotlib.pyplot as plt
 import os
 
-sampleName = 'NPl_CdSe_p2_24W'
-currentRange = 1e-4
+sampleName = 'NPl_CdSe_p1_24W'
+currentRange = 1e-2
 
 
 class Variables:
     inputVoltage = 2.0 
     interval = 2
     dose = 24
+    averaging = 1 # второе измерение периодически выпрыгивает вверх, вероятно из-за какой-то задержки измерения, поэтому лучше без неё, и без длинного цикла при точном измерении. Или только на быстром компе, а не Intel(R) Atom(TM) CPU D2700 @ 2.13GHz
     
     warmup_duration = 200 # sec, Delay for warm-up
     periods = 6
@@ -43,15 +44,53 @@ def single_measurement(voltage, average=1):
     # [current, voltage] = drain.measure_current_and_voltage()
     # return current, voltage
 
+    '''
+    # too slooooow
+    steps = 8
+    steps_over = 2
+    step = voltage / steps
+    total_steps = steps + steps_over + 1
+    v = 0
+    [currents, volts] = drain.measure_voltage_sweep(0, voltage + step*steps_over, settling_time=0, points=total_steps)
+    aver = sum(currents[-2*steps_over-1:])/(2*steps_over + 1)
+    drain.set_voltage(0)
+    print(aver, volts[steps])
+    return aver, volts[steps]
+    
+    '''
+    '''
+    steps = 8
+    steps_over = 2
+    step = voltage / steps
+    v = 0
+    total_steps = steps + steps_over + 1
+    currents = np.zeros(total_steps)
+    for i in range(total_steps):
+        appl_v = step * i
+        drain.set_voltage(appl_v)
+        [current, volt] = drain.measure_current_and_voltage()
+        currents[i] = current
+        if i == (steps):
+            v = volt
+
+    aver = sum(currents[-2*steps_over-1:])/(2*steps_over + 1)
+    drain.set_voltage(0)
+    return aver, v
+
+    
+    '''
     current_accum = 0.0
-    drain.set_voltage(voltage)
     for i in range(average):
+        drain.set_voltage(voltage)
         [current, voltage] = drain.measure_current_and_voltage()
+        drain.set_voltage(0)
         current_accum += current
-    drain.set_voltage(0)        
+        print(current, end=' ')
+      
+
     return current_accum/average, voltage
-
-
+    
+    
 def warm_up(duration, filenameRaw):
     try:
         sm.write_lua("digio.writebit(1, 0)")
@@ -78,8 +117,8 @@ def warm_up(duration, filenameRaw):
             while nowTime - startTime < position:
                 nowTime = time.time()
 
-            [current, voltage] = single_measurement(var.inputVoltage)
-            print('%.4f' % (nowTime - startTime), '%.5e' % current, '%.2f' % voltage)
+            [current, voltage] = single_measurement(var.inputVoltage, var.averaging)
+            print('%.4f' % (nowTime - startTime), '%.5e' % current, '%.3f' % voltage)
             with open(filenameRaw, 'a') as csvfile:
                 writer = csv.writer(csvfile,  lineterminator='\n')
                 nt = time.time()
@@ -117,7 +156,6 @@ def acquisition(start_meas, arr, filenameRaw):
     line1.set_ydata(arr_graph)
     plt.xlabel('Time / s', fontsize=14)
     plt.ylabel('Current / A', fontsize=14)
-    plt.title(time_for_title, fontsize=14)
     plt.tick_params(labelsize = 14)
     
     for i in range(arr.size):
@@ -140,7 +178,7 @@ def acquisition(start_meas, arr, filenameRaw):
         else: 
             [current, voltage] = single_measurement(var.inputVoltage)
         '''
-        [current, voltage] = single_measurement(var.inputVoltage)
+        [current, voltage] = single_measurement(var.inputVoltage, var.averaging)
         
         print('%.4f' % (nowTime - startTime), '%.5e' % current, '%.2f' % voltage, 'laserState=', laserState)
         with open(filenameRaw, 'a') as csvfile:
@@ -214,9 +252,10 @@ if __name__ == "__main__":
     drain.set_current_limit(currentRange)
     drain.set_current(0)
 
-    drain.set_measurement_speed_hi_accuracy()
+    # accurat measurement
+    # drain.set_measurement_speed_hi_accuracy()
     # or faster, but less precious
-    # drain.set_measurement_speed_normal()
+    drain.set_measurement_speed_normal()
     """ ******* For saving the data ******** """
 
     # Create unique filenames for saving the data
