@@ -291,7 +291,7 @@ if __name__ == "__main__":
 
     with open(filenameRaw, 'a') as csvfile:
         writer = csv.writer(csvfile,  lineterminator='\n')
-        writer.writerow(['Time, s' , 'Current, A', 'Voltage, V'])
+        writer.writerow(['# Time, s' , 'Current, A', 'Voltage, V'])
 
     start_meas = time.time()
     warm_up(var.warmup_duration, filenameRaw)
