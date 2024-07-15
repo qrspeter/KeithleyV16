@@ -112,7 +112,7 @@ def warm_up(duration, filenameRaw):
         startTime = time.time()
         nowTime = time.time()
         print('Warm-up started. Press Ctl+C to interrupt warm-up and start measurement')
-        while nowTime - startTime < var.pump_duration:
+        while nowTime - startTime < var.warmup_duration:
             position = var.interval * len(times)
             while nowTime - startTime < position:
                 nowTime = time.time()

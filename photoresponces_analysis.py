@@ -17,8 +17,8 @@ def calculate_responces(it_data, probe_positions):
     dark = []
     for i in probe_positions:
         for j in it_data[1:]:
-            t_segm = it_data[0][i[0] - approximated_range : i[1] + approximated_range]
-            d_segm = j[i[0] - approximated_range : i[1] + approximated_range]
+            t_segm = it_data[0][i[0]//interval - approximated_range : i[1]//interval + approximated_range]
+            d_segm = j[i[0]//interval - approximated_range : i[1]//interval + approximated_range]
             element = np.vstack((t_segm, d_segm))
             r, d = responce_calc(element, i[0], i[1]-i[0])
             resp.append(r)
@@ -108,6 +108,7 @@ pump_duration = var.pump_duration
 probe_shift = var.probe_shift
 probe_duration = var.probe_duration
 dose = var.dose 
+interval = var.interval
 
 probe_positions = ((pump_start - probe_shift, pump_start - probe_shift + probe_duration), (pump_start + pump_duration + probe_shift, pump_start + pump_duration + probe_shift + probe_duration))
 
@@ -148,6 +149,7 @@ if True:
     plt.ylabel('Photocurrent $\delta$I, A', fontsize=14)
     plt.title('Photocurrent vs Dose after pumps', fontsize=14)
     plt.legend()
+    plt.savefig(filename + '_resp.png')
     plt.show()
 
 
@@ -164,6 +166,7 @@ if True:
     plt.ylabel('Dark current, A', fontsize=14)
     plt.title('Dark current vs Dose after pumps', fontsize=14)
     plt.legend()
+    plt.savefig(filename + '_dark.png')
     plt.show()
 
 # ===========================
@@ -193,4 +196,5 @@ if True:
     plt.ylabel('Decay time, s', fontsize=14)
     plt.title('Decay time vs Dose after pumps', fontsize=14)
     plt.legend()
+    plt.savefig(filename + '_decay.png')
     plt.show() 
