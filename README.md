@@ -20,3 +20,7 @@ by TU Graz / Graz University of Technology
 Data are saved into ./data/ folder
 
 Press Ctrl-C to exit from delay or accumulation loop
+
+This work was supported by the Ministry of Science and Higher Education of the Russian Federation, goszаdanie no. 2019-1080.
+
+International Research and Education Centre for Physics of Nanostructures, ITMO University, Saint Petersburg 197101, Russia
