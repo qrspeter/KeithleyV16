@@ -4,6 +4,8 @@ Based on "Red Light Emitting Diode" from http://lampx.tugraz.at/~hadley/semi/stu
 by TU Graz / Graz University of Technology
 
 
+Recommendation for Windows users: to prevent searching for absent drivers install preliminary  KickStart-1.9.8 (by Keithley Instruments). KickStart installs the drives.
+
 * KeithleyV15.py - KeithleyV15 library.
 * diode_iv.py - IV measurement I(V). Several samples into one file.
 * diode_it.py - I(t) at given U until break.

@@ -158,7 +158,6 @@ def data2fig(filename, x, y, column_names, x_name, y_name, showfig=False, savefi
 
 
 def data2file(filename, data, column_names=[]):
-#    lists2file(column_names_str, filename_raw, lst_raw)
     delim = ','
     column_names_str = delim.join(column_names)
     np.savetxt(filename + '.csv', data, fmt='%.10g', delimiter=delim, header=column_names_str) 
@@ -182,5 +181,4 @@ if __name__ == "__main__":
     column_names = ('V','I')
     iv2fig(filename, voltages, currents, column_names[1:], True, True)
     data2file(filename, np.stack((voltages, currents), axis=0).T, column_names)
-    # np.savetxt(filename + '.csv', np.stack((voltages, currents), axis=0).T, fmt='%.10g', delimiter=',', header='Voltage (V), ' + column_names)
     

@@ -55,8 +55,8 @@ KeithleyV16.data2file(filename, np_data, column_names)
 KeithleyV16.iv2fig(filename, np_data[0,:], np_data[1:,:], column_names[1:], showfig=True, savefig=True)
 
 '''
-# Почему-то рисование в функции не происходит, хотя картинка сохраняется.
-аха, рисует если вызвать plt.show, а вызов в библиотеке не срабатывает
+By unknown reason iv2fig() does not show anything, but a figure is created. 
+But the plot is appeared if plt.show() is called here, so plt.show!
 '''
 
 plt.show()
