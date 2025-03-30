@@ -14,47 +14,40 @@ bias = 2 # V
 step = 1.0 # in sec. Not less than 0.7 for hi_accuracy and 0.5 for speed_normal
 
 sample_name = 'resistor' #'NPl_CdSe_p1'
-time_for_name = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 path = './data/'
-if not os.path.exists(path):
-   os.makedirs(path)
-   
-filename = path + time_for_name + '_' + sample_name +'_it_' + str(bias)
+
+def measurement_it(filename, step):
+    '''
+    comments...
+    comments...
+    '''
+    with open(filename + '.csv', 'a') as csvfile:
+            writer = csv.writer(csvfile,  lineterminator='\n')
+            writer.writerow(["# Time (sec)", "Drain (A)", "Drain (V)"])
+
+    fig = plt.figure()  # make a figure
+    ax = fig.add_subplot(111)
+    line1, = ax.plot(time_log, current_log, 'r.')
+    #line1, = ax.plot(time_arr, drain_current, label = r'$I_{DS}$', color='red', linewidth=2)
+    plt.xlabel('Time / s', fontsize=14)
+    plt.ylabel('Current / A', fontsize=14)
+    plt.title(time_for_name + r', $V_{DS}$ = ' + str(bias), fontsize=14)
+    plt.tick_params(labelsize = 14)
+
+    # to skip drawing of first dot (draws with a big delay)
+    line1.set_xdata(time_log)
+    line1.set_ydata(current_log)
+    ax.relim()
+    ax.autoscale()
+    fig.canvas.draw()
+    fig.canvas.flush_events()
+    keithley.set_v(bias)
+    keithley.get_v()
+
+    current_log = []
+    time_log = []
 
 
-
-print("Sample name: ", sample_name)
-
-
-with open(filename + '.csv', 'a') as csvfile:
-        writer = csv.writer(csvfile,  lineterminator='\n')
-        writer.writerow(["# Time (sec)", "Drain (A)", "Drain (V)"])
-
-current_log = []
-time_log = []
-
-
-plt.ion()  # enable interactivity
-fig = plt.figure()  # make a figure
-ax = fig.add_subplot(111)
-line1, = ax.plot(time_log, current_log, 'r.')
-#line1, = ax.plot(time_arr, drain_current, label = r'$I_{DS}$', color='red', linewidth=2)
-plt.xlabel('Time / s', fontsize=14)
-plt.ylabel('Current / A', fontsize=14)
-plt.title(time_for_name + r', $V_{DS}$ = ' + str(bias), fontsize=14)
-plt.tick_params(labelsize = 14)
-
-# to skip drawing of first dot (draws with a big delay)
-line1.set_xdata(time_log)
-line1.set_ydata(current_log)
-ax.relim()
-ax.autoscale()
-fig.canvas.draw()
-fig.canvas.flush_events()
-keithley.set_v(bias)
-keithley.get_v()
-
-try:
     start = time.time()
 
     while True:
@@ -83,12 +76,31 @@ try:
 
 
 
-except KeyboardInterrupt:
-    pass
-    
 
-plt.ioff()
+if not os.path.exists(path):
+   os.makedirs(path)
+   
+filename = path + time_for_name + '_' + sample_name +'_it_' + str(bias)
+
+print("Sample name: ", sample_name)
+
+time_for_name = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+
+try:
+    plt.ion()  # enable interactivity
+    measurement_it(filename, step)
+
+
+except KeyboardInterrupt:
+    plt.ioff()
+    
+plt.pause(100)
+plt.close("all")
+
 keithley.disable()
-KeithleyV16.it2fig(filename, time_log, current_log, ['Time, s'], showfig=True, savefig=True)
-plt.show()
+
+
+recorded = np.loadtxt(filename + '.csv', delimiter=',')
+
+KeithleyV16.it2fig(filename, recorded[:,0], recorded[:,1], ['Time, s'], showfig=False, savefig=True)
 
