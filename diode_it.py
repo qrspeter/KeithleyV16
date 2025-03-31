@@ -5,6 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import csv
 import os
+from pyvisa import VisaIOError
 
 current_range = 1e-2
 # current_ranges = [1E-9, 1E-8, 1E-7, 1E-6, 1E-5, 1E-4, 1E-3, 1E-2, 1E-1, 1, 1.5]
@@ -91,7 +92,8 @@ try:
     measurement_it(filename, step)
 
 
-except KeyboardInterrupt:
+except (KeyboardInterrupt, VisaIOError) as err:
+    print(f"A {type(err).__name__} has occurred."))
     plt.ioff()
     
 plt.pause(100)
