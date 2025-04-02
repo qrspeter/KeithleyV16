@@ -35,6 +35,9 @@ def measurement_it(filename, step):
             writer = csv.writer(csvfile,  lineterminator='\n')
             writer.writerow(["# Time (sec)", "Drain (A)", "Drain (V)"])
 
+    current_log = []
+    time_log = []
+    
     fig = plt.figure()  # make a figure
     ax = fig.add_subplot(111)
     line1, = ax.plot(time_log, current_log, 'r.')
@@ -54,13 +57,15 @@ def measurement_it(filename, step):
     keithley.set_v(bias)
     keithley.get_v()
 
-    current_log = []
-    time_log = []
 
     q_pressed_event = Event()
-    input_thread = Thread(target=read_input, daemon=True, args=(q_pressed_event,))
+    input_thread = Thread(target=read_input, daemon=True, args=(q_pressed_event,)) 
     input_thread.start()
+    message  = "***   Press q and Enter to stop the measurement  ***"
+    print("="*len(message) + '\n' + message + '\n' + "="*len(message))
     
+    keithley.get_i_v()
+    time.sleep(step)
     start = time.time()
     
     while True:
@@ -94,19 +99,22 @@ def measurement_it(filename, step):
 if not os.path.exists(path):
    os.makedirs(path)
    
+time_for_name = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+
 filename = path + time_for_name + '_' + sample_name +'_it_' + str(bias)
 
 print("Sample name: ", sample_name)
 
-time_for_name = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-
 plt.ion()  # enable interactivity
-measurement_it(filename, step)
 
+try:
+    measurement_it(filename, step)
+except Exception as err:
+    #print(f"Catched error: {type(err).__name__}")
+    pass
 
 plt.ioff()
     
-#plt.pause(100)
 plt.close("all")
 
 keithley.disable()
@@ -115,4 +123,4 @@ keithley.disable()
 recorded = np.loadtxt(filename + '.csv', delimiter=',')
 
 KeithleyV16.it2fig(filename, recorded[:,0], recorded[:,1], ['Time, s'], showfig=True, savefig=True)
-plt.show()
+#plt.show()
